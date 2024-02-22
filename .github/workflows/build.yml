@@ -1,6 +1,7 @@
 name: Wails build
 
 on:
+  workflow_dispatch:
   push:
     tags:
     # Match any new tag
@@ -17,15 +18,18 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - name: 'App'
+          - name: 'mult-game'
             platform:  'linux/amd64'
+            arch: 'linux-amd64'
             os: 'ubuntu-latest'
-          - name: 'App'
+          - name: 'mult-game'
             platform:  'windows/amd64'
+            arch: 'windows-amd64'
             os: 'windows-latest'
-          - name: 'App'
+          - name: 'mult-game'
             platform:  'darwin/universal'
             os: 'macos-latest'
+            arch: 'darwin-universal'
 
     runs-on: ${{ matrix.build.os }}
     steps:
@@ -38,7 +42,22 @@ jobs:
         uses: dAppServer/wails-build-action@v2.2
         id: build
         with:
-          build-name: ${{ matrix.build.name }}
+          build-name: ${{ matrix.build.name }}_${{ matrix.build.arch }}
           build-platform: ${{ matrix.build.platform }}
           package: false
-          go-version: '1.20'
+          go-version: '1.21'
+      # - name: Build Windows App + Installer
+      #   run: wails build --platform windows/amd64 -webview2 download -nsis -o 'mult-game-installer'
+      #   shell: bash
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Wails Build ${{runner.os}} mult-game
+          path: |
+            */bin/
+            *\bin\*
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            */bin/*
