@@ -1,19 +1,17 @@
-# README
+# Mult-game
 
 ## About
 
-This is the official Wails Vue-TS template.
+Mult-game is a little game made to help memorizing multiplication table.
 
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+It's pretty simple : once you started the game, it will ask you to solve a multiplication in less than 20 sec.
+- If you succeed, it will increase your current streak. Every five successful answer, the max timer duration will decrease by 4 second to a limit of 4 second (to ensure you remembered the results). 
+- If you fail, it's game over. You'll be able to register your score (using a 3 characters long nickname) and start over !.
 
-## Live Development
+The game is supposed to be able to update itself on launch.
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
+More features are to come :
 
-## Building
-
-To build a redistributable, production mode package, use `wails build`.
+- [ ] live score display
+- [ ] new difficulty mode (easier than the existing one)
+- [ ] might add some other mod later

@@ -9,5 +9,13 @@
   "author": {
     "name": "mjehanno",
     "email": "mathob.jehanno@hotmail.fr"
-  }
+  },
+   "info": {
+    "companyName": "mJehanno",
+    "productName": "mult-game",
+    "productVersion": "0.9.0",
+    "copyright": "Copyright @mJehanno",
+    "comments": "Built using Wails (https://wails.io)"
+  },
+  "obfuscated": false
 }

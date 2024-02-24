@@ -12,8 +12,8 @@ import (
 )
 
 type ScoreService struct {
-	logger *logger.Logger
-	data   *db.Db
+	Logger *logger.Logger
+	Data   *db.Db
 }
 
 type ScoreDB struct {
@@ -39,16 +39,21 @@ func (s ScoreDB) Convert(dest *Score) {
 }
 
 type Score struct {
-	fx.In
 	Username string    `db:"username" json:"username"`
 	Score    int       `db:"score" json:"score"`
 	Date     time.Time `db:"created_at" goqu:"skipinsert" json:"created_at"`
 }
 
-func NewScoreService(logger *logger.Logger, conn *db.Db) *ScoreService {
+type ScoreParams struct {
+	fx.In
+	Logger *logger.Logger
+	Conn   *db.Db
+}
+
+func NewScoreService(p ScoreParams) *ScoreService {
 	return &ScoreService{
-		logger: logger,
-		data:   conn,
+		Logger: p.Logger,
+		Data:   p.Conn,
 	}
 }
 
@@ -57,7 +62,7 @@ func (s *ScoreService) GetScore() []Score {
 		resDB []*ScoreDB
 		res   []Score
 	)
-	query := s.data.Conn.Select(
+	query := s.Data.Conn.Select(
 		goqu.C("username"),
 		goqu.C("score"),
 		goqu.C("created_at"),
@@ -65,7 +70,7 @@ func (s *ScoreService) GetScore() []Score {
 
 	err := query.ScanStructsContext(context.Background(), &resDB)
 	if err != nil {
-		s.logger.ErrLogger.WithError(err).Error("failed to retrieve ranks from database")
+		s.Logger.ErrLogger.WithError(err).Error("failed to retrieve ranks from database")
 		return nil
 	}
 
@@ -80,10 +85,10 @@ func (s *ScoreService) GetScore() []Score {
 
 func (s ScoreService) AddScore(sc Score) error {
 
-	query := s.data.Conn.Insert("rank").Prepared(true).Rows(sc).Executor()
+	query := s.Data.Conn.Insert("rank").Prepared(true).Rows(sc).Executor()
 
 	if _, err := query.Exec(); err != nil {
-		s.logger.ErrLogger.WithError(err).Error("failed to add rank in database")
+		s.Logger.ErrLogger.WithError(err).Error("failed to add rank in database")
 		return err
 	} else {
 		return nil

@@ -63,7 +63,6 @@ func GetDbConnection(logger *logger.Logger) *Db {
 }
 
 func (db *Db) createTable() {
-	db.logger.DebugLogger.Debug("creating table")
 	_, err := db.Conn.Exec(schema)
 	if err != nil {
 		db.logger.ErrLogger.WithError(err).Error("failed to create table rank in database")

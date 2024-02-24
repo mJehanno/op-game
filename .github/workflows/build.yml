@@ -18,18 +18,12 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - name: 'mult-game'
+          - name: 'mult-game_linux-amd64'
             platform:  'linux/amd64'
-            arch: 'linux-amd64'
             os: 'ubuntu-latest'
-          - name: 'mult-game'
+          - name: 'mult-game_windows-amd64'
             platform:  'windows/amd64'
-            arch: 'windows-amd64'
             os: 'windows-latest'
-          - name: 'mult-game'
-            platform:  'darwin/universal'
-            os: 'macos-latest'
-            arch: 'darwin-universal'
 
     runs-on: ${{ matrix.build.os }}
     steps:
@@ -37,27 +31,9 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
-
-      - name: Build wails
+      - name: Build & Deploy
         uses: dAppServer/wails-build-action@v2.2
-        id: build
         with:
-          build-name: ${{ matrix.build.name }}_${{ matrix.build.arch }}
+          build-name: ${{ matrix.build.name }}
           build-platform: ${{ matrix.build.platform }}
-          package: false
-          go-version: '1.21'
-      # - name: Build Windows App + Installer
-      #   run: wails build --platform windows/amd64 -webview2 download -nsis -o 'mult-game-installer'
-      #   shell: bash
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Wails Build ${{runner.os}} mult-game
-          path: |
-            */bin/
-            *\bin\*
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: |
-            */bin/*
+          go-version: 1.21
