@@ -6,6 +6,7 @@ import {  useRouter } from 'vue-router';
 import { GetScore } from '../../wailsjs/go/score/ScoreService';
 import {score} from "../../wailsjs/go/models";
 import { useToast } from 'primevue/usetoast';
+import { format} from "date-fns";
 
 const displayedScore = ref<Array<score.Score> | null>(null)
 const toast = useToast();
@@ -28,7 +29,13 @@ const router = useRouter();
         <DataTable :value="displayedScore" stripedRows tableStyle="min-width: 50rem" tableClass="w-7">
             <Column field="username" header="Username"></Column>
             <Column field="score" header="Score"></Column>
-            <Column field="created_at" header="Date"></Column>
+            <Column field="created_at" header="Date">
+                <template #body="slotProps">
+                    <div>
+                        {{ format(slotProps.data.created_at, "dd/MM/yyyy") }}
+                    </div>
+                </template>
+            </Column>
             <template v-slot:empty>
                 <p class="text-center">No rank recorded at the moment. Start playing to register one !</p>
             </template>

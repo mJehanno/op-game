@@ -1,8 +1,4 @@
 <script lang="ts" setup>
-import Home from "@/components/Home.vue";
-import Game from '@/components/Game.vue';
-import ScoreBoard from '@/components/ScoreBoard.vue';
-
 import { State} from '@/models/game';
 import {reactive, onMounted, ref} from 'vue';
 import {GetScore} from '../wailsjs/go/score/ScoreService';
@@ -13,6 +9,7 @@ const seescore = ref(false);
 
 
 onMounted(() => {
+
   GetScore().then(scores => {
     console.log(scores);
   }).catch(err => {
@@ -33,6 +30,7 @@ function seeScore() {
 <template>
   <h1>Mult-Game</h1>
   <router-view></router-view>
+
 </template>
 <style>
   h1{
