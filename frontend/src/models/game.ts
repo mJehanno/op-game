@@ -1,9 +1,5 @@
-export interface Game {
-    state: State;
-}
-
-export enum State {
-    Ready,
-    Started,
-    Over
+export enum DifficultyLevel {
+    Easy = "easy",
+    Medium = "medium",
+    Hard = "hard"
 }

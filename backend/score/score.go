@@ -41,7 +41,7 @@ func (s ScoreDB) Convert(dest *Score) {
 type Score struct {
 	Username string    `db:"username" json:"username"`
 	Score    int       `db:"score" json:"score"`
-	Date     time.Time `db:"created_at" goqu:"skipinsert" json:"created_at"`
+	Date     time.Time `db:"created_at" goqu:"skipinsert" json:"created_at,omitempty"`
 }
 
 type ScoreParams struct {

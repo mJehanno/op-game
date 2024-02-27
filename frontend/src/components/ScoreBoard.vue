@@ -7,6 +7,11 @@ import { GetScore } from '../../wailsjs/go/score/ScoreService';
 import {score} from "../../wailsjs/go/models";
 import { useToast } from 'primevue/usetoast';
 import { format} from "date-fns";
+import type { Mode } from '@/models/scoreboard';
+
+const props  = defineProps<{
+    mode?:  Mode
+}>()
 
 const displayedScore = ref<Array<score.Score> | null>(null)
 const toast = useToast();

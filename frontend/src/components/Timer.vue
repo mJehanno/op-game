@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {  watchEffect, onMounted, computed } from "vue";
+import {  watchEffect, onMounted, computed, ref } from "vue";
 import { useTimer } from 'vue-timer-hook';
 
 const COLOR_CODES = {
@@ -17,9 +17,6 @@ const COLOR_CODES = {
 };
 
 
-const props = defineProps<{
-    sec: number;
-}>()
 let remainingPathColor = computed(() => {
   switch (true) {
     case timer.seconds.value > COLOR_CODES.warning.threshold:
@@ -32,17 +29,25 @@ let remainingPathColor = computed(() => {
 })
 
 const emits = defineEmits(["timeout"])
-
+const defaultSec = ref(20)
 const time = new Date();
-time.setSeconds(time.getSeconds()+ props.sec);
+time.setSeconds(time.getSeconds()+ defaultSec.value);
+const timer = useTimer(time, true);
 
-function reset(sec){
-    const time = new Date();
-    time.setSeconds(time.getSeconds() + sec);
-    timer.restart(time)
+
+
+function reset() {
+  const time = new Date();
+  time.setSeconds(time.getSeconds() + defaultSec.value);
+  timer.restart(time);
 }
 
-const timer = useTimer(time);
+function resetWithSec(sec: number){
+  const time = new Date();
+  time.setSeconds(time.getSeconds() + defaultSec.value + sec);
+  timer.restart(time);
+}
+
 onMounted(() => {
   watchEffect(async () => {
     if(timer.isExpired.value) {
@@ -52,7 +57,9 @@ onMounted(() => {
 })
 
 defineExpose({
-    reset
+    reset,
+    resetWithSec,
+    defaultSec
 })
 </script>
 <template>
@@ -66,18 +73,15 @@ defineExpose({
           class="base-timer__path-remaining" :class="remainingPathColor"
           d="
             M 25, 25
-            m -20, 0
-            a 20,20 0 0,5 40,0
-            a 20,20 0 0,5 -40,0
+            M -20, 0
+            A 20,20 0 0,5 40,0
+            A 20,20 0 0,5 -40,0
           "
         ></path>
         </g>
     </svg>
         <span id="base-timer-label" class="base-timer__label">{{ timer.seconds }}</span>
     </div>
-    <!--<div>
-        <span>{{ timer.seconds }}</span>
-    </div>-->
 </template>
 
 <style>

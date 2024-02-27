@@ -3,14 +3,19 @@ import { onMounted, ref } from 'vue';
 
 import Message from 'primevue/message';
 import Button from 'primevue/button';
+import Inplace from 'primevue/inplace';
 
 import {GetCurrentVersion} from '../../wailsjs/go/version/VersionManager'
 import {CheckLatest, Update} from '../../wailsjs/go/selfupdater/Updater';
-import { BrowserOpenURL} from '../../wailsjs/runtime/runtime';
+import { BrowserOpenURL } from '../../wailsjs/runtime/runtime';
+
+
+import { DifficultyLevel } from '@/models/game';
 
 const version = ref<string|null>(null)
 const displayUpdateInfo = ref(false)
 const successfulUpdate = ref<boolean | null>(null)
+const displayDifficultyLevel = ref(false)
 
 function performUpdate() {
     Update().then( _ => {
@@ -18,6 +23,10 @@ function performUpdate() {
     }).catch(err => {
         successfulUpdate.value = false
     })
+}
+
+const displayDifficulty = () => {
+    displayDifficultyLevel.value = !displayDifficultyLevel.value
 }
 
 function openURL(e: Event) {
@@ -37,9 +46,20 @@ onMounted(() => {
 </script>
 <template>
     <div class="flex flex-column align-items-center">
-        <div class="flex flex-column m-8">
-            <router-link to="/game" class="m-2"><Button label="Start Game" rounded severity="success" @click="$emit('startGame')" /></router-link>
-            <router-link to="/scores" class="m-2"><Button label="See Scores" rounded severity="info" @click="$emit('startGame')" /></router-link>
+        <div class="flex flex-column m-8 w-full align-items-center">
+            <Button class="m-3 w-3" label="Start Game" rounded severity="success" @click="displayDifficulty" />
+                <div class="flex flex-column w-full" v-if="displayDifficultyLevel">
+                    <div class="m-1 w-full">
+                        <router-link :to="'/game/' + DifficultyLevel.Easy" class="m-1 w-full"><Button class="w-2" rounded severity="info" :label="DifficultyLevel.Easy" /></router-link>
+                    </div>
+                    <div class="m-1 w-full">
+                        <router-link :to="'/game/' + DifficultyLevel.Medium" class="m-1 w-full"><Button class="w-2" rounded severity="warning" :label="DifficultyLevel.Medium" /></router-link>
+                    </div>
+                    <div class="m-1 w-full">
+                        <router-link :to="'/game/' + DifficultyLevel.Hard" class="m-1 w-full"><Button class="w-2" rounded severity="danger" :label="DifficultyLevel.Hard"/></router-link>
+                    </div>
+                </div>
+            <router-link to="/scores" class="m-3 w-full"><Button  class="w-3" label="See Scores" rounded severity="help" /></router-link>
         </div>
 
         <div>

@@ -4,7 +4,7 @@ export namespace score {
 	    username: string;
 	    score: number;
 	    // Go type: time
-	    created_at: any;
+	    created_at?: any;
 	
 	    static createFrom(source: any = {}) {
 	        return new Score(source);

@@ -13,7 +13,7 @@ import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';    
 const routes =  [
   { path: "/", component: Home},
-  { path: "/game", component: Game},
+  { path: "/game/:difficultyLevel", component: Game},
   { path: "/scores", component: ScoreBoard},
 ]
 

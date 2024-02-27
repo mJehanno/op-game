@@ -1,10 +1,6 @@
 <script lang="ts" setup>
-import { State} from '@/models/game';
-import {reactive, onMounted, ref} from 'vue';
+import { onMounted} from 'vue';
 import {GetScore} from '../wailsjs/go/score/ScoreService';
-
-const game = reactive({ state: State.Ready});
-const seescore = ref(false);
 
 
 
@@ -18,14 +14,6 @@ onMounted(() => {
 });
 
 
-
-function startGame() {
-    game.state = State.Started
-}
-
-function seeScore() {
-  seescore.value = true
-}
 </script>
 <template>
   <h1>Mult-Game</h1>
