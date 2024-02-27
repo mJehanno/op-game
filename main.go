@@ -6,11 +6,10 @@ import (
 	"mult-game/backend/db"
 	"mult-game/backend/logger"
 	"mult-game/backend/score"
-	"mult-game/backend/update"
 	"mult-game/backend/version"
-	"net/http"
 
-	"github.com/google/go-github/v59/github"
+	"github.com/blang/semver"
+	selfupdate "github.com/mJehanno/ghr-self-updater"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -20,14 +19,22 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+const (
+	owner = "mJehanno"
+	repo  = "op-game"
+)
+
+var (
+	current = semver.MustParse("1.0.1")
+)
+
 type Binder struct {
 	//fx.In
 	App     *App                    `name:"App"`
 	Score   *score.ScoreService     `name:"Score"`
 	Vm      *version.VersionManager `name:"VersionManager"`
-	Updater *update.Updater         `name:"Updater"`
+	Updater *selfupdate.Updater     `name:"Updater"`
 	Logger  *logger.Logger          `name:"Logger"`
-	Client  *github.Client          `name:Client"`
 }
 
 type BinderParams struct {
@@ -35,9 +42,8 @@ type BinderParams struct {
 	App     *App
 	Score   *score.ScoreService
 	Vm      *version.VersionManager
-	Updater *update.Updater
+	Updater *selfupdate.Updater
 	Logger  *logger.Logger
-	Client  *github.Client
 }
 
 func main() {
@@ -48,14 +54,11 @@ func main() {
 
 	fx.New(
 		fx.Provide(
-			update.NewErrorHandler,
-			func() *github.Client {
-				return github.NewClient(http.DefaultClient)
+			func() *selfupdate.Updater {
+				return selfupdate.New(owner, repo, current)
 			},
-			//github.NewClient,
 			db.GetDbConnection,
 			logger.NewLogger,
-			update.NewUpdater,
 			NewApp,
 			score.NewScoreService,
 			version.NewVersionManager,
@@ -72,7 +75,6 @@ func main() {
 		),
 		fx.Populate(&bind),
 		fx.Invoke(func(b *Binder) {
-			b.Updater.DoSelfUpdate(ctx())
 			startApp(b)
 		}),
 	).Start(context.Background())
@@ -92,6 +94,7 @@ func startApp(bind *Binder) {
 			bind.App,
 			bind.Score,
 			bind.Vm,
+			bind.Updater,
 		},
 	})
 

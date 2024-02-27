@@ -6,7 +6,7 @@ type VersionManager struct {
 
 func NewVersionManager() *VersionManager {
 	return &VersionManager{
-		current: "1.0.0",
+		current: "1.0.1",
 	}
 }
 
