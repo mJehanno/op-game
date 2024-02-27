@@ -12,7 +12,7 @@ require (
 	modernc.org/sqlite v1.29.1
 )
 
-require github.com/mJehanno/ghr-self-updater v1.0.0
+require github.com/mJehanno/ghr-self-updater v1.0.1
 
 require (
 	github.com/bep/debounce v1.2.1 // indirect

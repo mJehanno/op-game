@@ -66,7 +66,7 @@ func (s *ScoreService) GetScore() []Score {
 		goqu.C("username"),
 		goqu.C("score"),
 		goqu.C("created_at"),
-	).From("rank").Order(goqu.C("score").Desc()).Limit(10)
+	).From("rank").Order(goqu.C("score").Desc(), goqu.C("created_at").Desc()).Limit(10)
 
 	err := query.ScanStructsContext(context.Background(), &resDB)
 	if err != nil {

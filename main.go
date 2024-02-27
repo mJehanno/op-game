@@ -25,7 +25,7 @@ const (
 )
 
 var (
-	current = semver.MustParse("1.0.1")
+	current = semver.MustParse("1.1.0")
 )
 
 type Binder struct {
@@ -53,6 +53,7 @@ func main() {
 	}
 
 	fx.New(
+		fx.Supply(current),
 		fx.Provide(
 			func() *selfupdate.Updater {
 				return selfupdate.New(owner, repo, current)

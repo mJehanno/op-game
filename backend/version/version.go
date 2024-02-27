@@ -1,12 +1,14 @@
 package version
 
+import "github.com/blang/semver"
+
 type VersionManager struct {
 	current string
 }
 
-func NewVersionManager() *VersionManager {
+func NewVersionManager(current semver.Version) *VersionManager {
 	return &VersionManager{
-		current: "1.0.1",
+		current: current.String(),
 	}
 }
 
