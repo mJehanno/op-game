@@ -4,4 +4,4 @@ import {score} from '../models';
 
 export function AddScore(arg1:score.Score):Promise<void>;
 
-export function GetScore():Promise<Array<score.Score>>;
+export function GetScore(arg1:score.DifficultyLevel):Promise<Array<score.Score>>;

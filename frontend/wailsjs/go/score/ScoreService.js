@@ -6,6 +6,6 @@ export function AddScore(arg1) {
   return window['go']['score']['ScoreService']['AddScore'](arg1);
 }
 
-export function GetScore() {
-  return window['go']['score']['ScoreService']['GetScore']();
+export function GetScore(arg1) {
+  return window['go']['score']['ScoreService']['GetScore'](arg1);
 }

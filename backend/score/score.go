@@ -16,10 +16,19 @@ type ScoreService struct {
 	Data   *db.Db
 }
 
+type DifficultyLevel string
+
+const (
+	Easy   DifficultyLevel = "easy"
+	Medium DifficultyLevel = "medium"
+	Hard   DifficultyLevel = "hard"
+)
+
 type ScoreDB struct {
-	Username string `db:"username" json:"username"`
-	Score    int    `db:"score" json:"score"`
-	Date     string `db:"created_at" goqu:"skipinsert"`
+	Username   string          `db:"username" json:"username"`
+	Score      int             `db:"score" json:"score"`
+	Difficulty DifficultyLevel `db:"difficulty" json:"difficulty"`
+	Date       string          `db:"created_at" goqu:"skipinsert"`
 }
 
 func (s Score) Convert(dest *ScoreDB) {
@@ -39,9 +48,10 @@ func (s ScoreDB) Convert(dest *Score) {
 }
 
 type Score struct {
-	Username string    `db:"username" json:"username"`
-	Score    int       `db:"score" json:"score"`
-	Date     time.Time `db:"created_at" goqu:"skipinsert" json:"created_at,omitempty"`
+	Username   string          `db:"username" json:"username"`
+	Score      int             `db:"score" json:"score"`
+	Difficulty DifficultyLevel `db:"difficulty" json:"difficulty"`
+	Date       time.Time       `db:"created_at" goqu:"skipinsert" json:"created_at,omitempty"`
 }
 
 type ScoreParams struct {
@@ -57,7 +67,7 @@ func NewScoreService(p ScoreParams) *ScoreService {
 	}
 }
 
-func (s *ScoreService) GetScore() []Score {
+func (s *ScoreService) GetScore(difficulty DifficultyLevel) []Score {
 	var (
 		resDB []*ScoreDB
 		res   []Score
@@ -65,8 +75,10 @@ func (s *ScoreService) GetScore() []Score {
 	query := s.Data.Conn.Select(
 		goqu.C("username"),
 		goqu.C("score"),
+		goqu.C("difficulty"),
 		goqu.C("created_at"),
-	).From("rank").Order(goqu.C("score").Desc(), goqu.C("created_at").Desc()).Limit(10)
+	).From("rank").Order(goqu.C("score").Desc(), goqu.C("created_at").Desc()).
+		Where(goqu.C("difficulty").Eq(difficulty)).Limit(10)
 
 	err := query.ScanStructsContext(context.Background(), &resDB)
 	if err != nil {
@@ -84,6 +96,8 @@ func (s *ScoreService) GetScore() []Score {
 }
 
 func (s ScoreService) AddScore(sc Score) error {
+
+	s.Logger.DebugLogger.Debug(sc)
 
 	query := s.Data.Conn.Insert("rank").Prepared(true).Rows(sc).Executor()
 

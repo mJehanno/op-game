@@ -3,6 +3,7 @@ export namespace score {
 	export class Score {
 	    username: string;
 	    score: number;
+	    difficulty: string;
 	    // Go type: time
 	    created_at?: any;
 	
@@ -14,6 +15,7 @@ export namespace score {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.username = source["username"];
 	        this.score = source["score"];
+	        this.difficulty = source["difficulty"];
 	        this.created_at = this.convertValues(source["created_at"], null);
 	    }
 	
