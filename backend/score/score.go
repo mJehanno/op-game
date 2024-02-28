@@ -96,9 +96,6 @@ func (s *ScoreService) GetScore(difficulty DifficultyLevel) []Score {
 }
 
 func (s ScoreService) AddScore(sc Score) error {
-
-	s.Logger.DebugLogger.Debug(sc)
-
 	query := s.Data.Conn.Insert("rank").Prepared(true).Rows(sc).Executor()
 
 	if _, err := query.Exec(); err != nil {
