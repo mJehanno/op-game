@@ -25,6 +25,7 @@ const (
 )
 
 type ScoreDB struct {
+	ID         int64           `db:"id" json:"id,omitempty"`
 	Username   string          `db:"username" json:"username"`
 	Score      int             `db:"score" json:"score"`
 	Difficulty DifficultyLevel `db:"difficulty" json:"difficulty"`
@@ -48,6 +49,7 @@ func (s ScoreDB) Convert(dest *Score) {
 }
 
 type Score struct {
+	ID         int64           `db:"id" json:"id,omitempty"`
 	Username   string          `db:"username" json:"username"`
 	Score      int             `db:"score" json:"score"`
 	Difficulty DifficultyLevel `db:"difficulty" json:"difficulty"`
@@ -73,6 +75,7 @@ func (s *ScoreService) GetScore(difficulty DifficultyLevel) []Score {
 		res   []Score
 	)
 	query := s.Data.Conn.Select(
+		goqu.C("id"),
 		goqu.C("username"),
 		goqu.C("score"),
 		goqu.C("difficulty"),

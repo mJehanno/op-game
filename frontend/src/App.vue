@@ -1,18 +1,4 @@
 <script lang="ts" setup>
-import { onMounted} from 'vue';
-import {GetScore} from '../wailsjs/go/score/ScoreService';
-
-
-
-onMounted(() => {
-
-  GetScore().then(scores => {
-    console.log(scores);
-  }).catch(err => {
-    console.error(err);
-  })
-});
-
 
 </script>
 <template>

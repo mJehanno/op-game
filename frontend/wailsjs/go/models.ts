@@ -1,6 +1,7 @@
 export namespace score {
 	
 	export class Score {
+	    id?: number;
 	    username: string;
 	    score: number;
 	    difficulty: string;
@@ -13,6 +14,7 @@ export namespace score {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
 	        this.username = source["username"];
 	        this.score = source["score"];
 	        this.difficulty = source["difficulty"];
