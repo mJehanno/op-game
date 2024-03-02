@@ -1,7 +1,8 @@
 import {createApp} from 'vue'
-import Home from '@/components/Home.vue';
-import Game from '@/components/Game.vue';
-import ScoreBoard from '@/components/ScoreBoard.vue';
+import Home from '@/pages/Home.vue';
+import Game from '@/pages/Game.vue';
+import ScoreBoard from '@/pages/Ladder.vue';
+import Multer from '@/pages/Multer.vue';
 import App from './App.vue';
 import {createRouter, createWebHashHistory} from 'vue-router';
 import '/node_modules/primeflex/primeflex.css';
@@ -13,7 +14,11 @@ import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';    
 const routes =  [
   { path: "/", component: Home},
-  { path: "/game/:difficultyLevel", component: Game},
+  { 
+    path: "/game", 
+    component: Game, 
+    children: [{ path: "mult/:level", component: Multer}]
+  },
   { path: "/scores", component: ScoreBoard},
 ]
 

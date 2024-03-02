@@ -11,13 +11,16 @@ declare module 'vue' {
     Column: typeof import('primevue/column')['default']
     DataTable: typeof import('primevue/datatable')['default']
     Game: typeof import('./src/components/Game.vue')['default']
-    Home: typeof import('./src/components/Home.vue')['default']
+    GameOverDialog: typeof import('./src/components/GameOverDialog.vue')['default']
     InputText: typeof import('primevue/inputtext')['default']
+    LifeBar: typeof import('./src/components/LifeBar.vue')['default']
     Prompter: typeof import('./src/components/Prompter.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScoreBoard: typeof import('./src/components/ScoreBoard.vue')['default']
     Streak: typeof import('./src/components/Streak.vue')['default']
     Timer: typeof import('./src/components/Timer.vue')['default']
+    Update: typeof import('./src/components/Update.vue')['default']
+    VersionDisplayer: typeof import('./src/components/VersionDisplayer.vue')['default']
   }
 }

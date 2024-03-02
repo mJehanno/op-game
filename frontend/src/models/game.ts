@@ -12,12 +12,10 @@ export interface GamePrompt {
 }
 
 export interface GameState {
-    err?: string; 
     streak: number;
     endingDialogVisible : boolean;
-    level: DifficultyLevel;
-    currentlife: number;
-    user? :  string;
-    answer?: number;
     maxSec: number;
+    maxLife: number;
+    currentLife: number;
+    user? :  string;
 }
