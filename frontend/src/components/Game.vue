@@ -33,6 +33,7 @@ const gameState: GameState  = reactive({
     endingDialogVisible : false,
     level: route.params.difficultyLevel as DifficultyLevel,
     currentlife: route.params.difficultyLevel == 'medium' ? 3 : 0,
+    maxSec: 20
 })
 
 const game_prompt: GamePrompt = reactive({
@@ -74,8 +75,11 @@ function check(val: number | undefined, timeout: boolean)  {
     if (val == game_prompt.result) {
         gameState.streak ++;
         current.score ++;
-        if (gameState.level == DifficultyLevel.Hard && timer.value && gameState.streak %5 == 0 && timer.value?.defaultSec.value > 4) {
-            timer.value.defaultSec.value -= 4;
+        if (gameState.level == DifficultyLevel.Hard && timer.value && gameState.streak %5 == 0 && gameState.maxSec > 4) {
+            gameState.maxSec -= 4;
+            generatePrompt()
+            //timer.value?.resetWithoutSec(4)
+            return
         }
     }else {
         switch(gameState.level) {
@@ -110,7 +114,7 @@ function check(val: number | undefined, timeout: boolean)  {
 <template>
     <div>
         <div class="flex flex-column align-items-center">
-            <Timer @timeout="check(gameState.answer, true)" ref="timer"/>
+            <Timer :seconds="gameState.maxSec" @timeout="check(gameState.answer, true)" ref="timer"/>
             <div class="flex flex-row align-items-center w-full justify-content-evenly">
                 <span id="streak">Current streak : {{ gameState.streak }}</span>
                 <div v-if="gameState.level == DifficultyLevel.Medium">

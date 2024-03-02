@@ -16,6 +16,9 @@ const COLOR_CODES = {
   }
 };
 
+const props = defineProps<{
+  seconds: number
+}>()
 
 let remainingPathColor = computed(() => {
   switch (true) {
@@ -29,24 +32,27 @@ let remainingPathColor = computed(() => {
 })
 
 const emits = defineEmits(["timeout"])
-const defaultSec = ref(20)
 const time = new Date();
-time.setSeconds(time.getSeconds()+ defaultSec.value);
+time.setSeconds(time.getSeconds()+ props.seconds);
 const timer = useTimer(time, true);
 
 
 
 function reset() {
   const time = new Date();
-  time.setSeconds(time.getSeconds() + defaultSec.value);
+  time.setSeconds(time.getSeconds() + props.seconds);
   timer.restart(time);
 }
 
-function resetWithSec(sec: number){
+/*function resetWithoutSec(sec: number){
   const time = new Date();
-  time.setSeconds(time.getSeconds() + defaultSec.value + sec);
+  time.setSeconds(time.getSeconds() + defaultSec.value - sec);
   timer.restart(time);
-}
+}*/
+
+/*function getDefaultSec() {
+  return props.seconds
+}*/
 
 onMounted(() => {
   watchEffect(async () => {
@@ -58,8 +64,6 @@ onMounted(() => {
 
 defineExpose({
     reset,
-    resetWithSec,
-    defaultSec
 })
 </script>
 <template>

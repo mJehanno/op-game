@@ -19,4 +19,5 @@ export interface GameState {
     currentlife: number;
     user? :  string;
     answer?: number;
+    maxSec: number;
 }
