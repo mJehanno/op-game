@@ -12,6 +12,6 @@ The game is supposed to be able to update itself on launch.
 
 More features are to come :
 
-- [ ] live score display
-- [ ] new difficulty mode (easier than the existing one)
+- [X] live score display
+- [X] new difficulty mode (easier than the existing one)
 - [ ] might add some other mod later

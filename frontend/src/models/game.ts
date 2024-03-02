@@ -1,23 +1,39 @@
+
+export interface DifficultyLevelData {
+    order: number;
+    value: string;
+}
+
 export enum DifficultyLevel {
     Easy = "easy",
     Medium = "medium",
     Hard = "hard"
 }
 
-export interface GamePrompt {
-    x: number;
-    y: number;
-    result: number;
-    prompt: string;
+export function cmpDifficulty(a: DifficultyLevel, b: DifficultyLevel): number {
+    if (a == b) {
+        return 0
+    }
+    switch (a) {
+        case DifficultyLevel.Easy:
+            return -1;   
+        case DifficultyLevel.Hard:
+            return 1;
+        case DifficultyLevel.Medium:
+            return b == DifficultyLevel.Easy ? 1 : -1
+    }
+}
+
+export enum GameMode {
+    Mult= "mult",
+    Add = "add",
+    Min = "min",
+    Divid = "divid"
 }
 
 export interface GameState {
-    err?: string; 
-    streak: number;
     endingDialogVisible : boolean;
-    level: DifficultyLevel;
-    currentlife: number;
-    user? :  string;
-    answer?: number;
     maxSec: number;
+    maxLife: number;
+    currentLife: number;
 }

@@ -1,178 +1,89 @@
 <script setup lang="ts">
-import { computed, reactive, ref} from 'vue';
-import { onMounted } from 'vue'
-
-import InputNumber from 'primevue/inputnumber';
-import FloatLabel from 'primevue/floatlabel';
-import Dialog from 'primevue/dialog';
-import InlineMessage from 'primevue/inlinemessage';
-
-import Prompter from '@/components/Prompter.vue';
-import Timer from '@/components/Timer.vue';
+import { DifficultyLevel, type GameState } from '@/models/game';
+import { computed, onBeforeMount, reactive, ref } from 'vue';
+import Timer from '@/components/game-components/Timer.vue';
+import Streak from '@/components/game-components/Streak.vue';
+import LifeBar from '@/components/game-components/LifeBar.vue';
 import ScoreBoard from '@/components/ScoreBoard.vue';
+import GameBoard from '@/components/game-components/GameBoard.vue';
+import GameOverDialog from '@/components/game-components/GameOverDialog.vue';
+import { Mode } from '@/models/scoreboard';
+import { useGameInfosStore } from '@/stores/game-infos';
+import { useScoresStore } from '@/stores/scores';
+import { useGameStore } from '@/stores/game';
 import { useRouter } from 'vue-router';
-import { AddScore } from '../../wailsjs/go/score/ScoreService';
-import { DifficultyLevel } from '@/models/game';
-import type {GamePrompt, GameState} from '@/models/game';
-import {score} from '../../wailsjs/go/models';
-import { useRoute } from 'vue-router';
-import {Mode} from '@/models/scoreboard';
 
-onMounted(() => {
-    generatePrompt();
-});
-
-const route = useRoute()
 const router = useRouter();
+const gameInfosStore = useGameInfosStore();
+const scoresStore = useScoresStore();
+const gameStore = useGameStore();
 
-const prompt = computed<string>(() => game_prompt.x + " X " + game_prompt.y + " = ");
-const result = computed<number>(() => game_prompt.x * game_prompt.y);
-const timer = ref<typeof Timer | null>(null)
-const gameState: GameState  = reactive({
-    streak: 0,
-    endingDialogVisible : false,
-    level: route.params.difficultyLevel as DifficultyLevel,
-    currentlife: route.params.difficultyLevel == 'medium' ? 3 : 0,
-    maxSec: 20
-})
+const gameState = reactive<GameState>({
+    maxSec: 20,
+    endingDialogVisible: false,
+    currentLife: 3,
+    maxLife: 3,
+});
+const timer = ref<typeof Timer | null>(null);
 
-const game_prompt: GamePrompt = reactive({
-    x : 0,
-    y : 0,
-    result: result,
-    prompt: prompt,
-})
-
-const current: score.Score = reactive(
-    {id: -1,username: 'xxx', score: 0, difficulty: gameState.level, created_at: new Date()} as score.Score
-)
-
-function generateRandom(): number{
-    return Math.ceil(Math.random() * 10);
+function checkDifficulty(lvl: DifficultyLevel): boolean {
+    return gameInfosStore.difficultyLevel  == lvl;
 }
 
-function openEndingDialog() {
+const scores = computed(() => {
+    const arr = scoresStore.scores.get(gameInfosStore.selectedGame)?.get(gameInfosStore.difficultyLevel);
+    arr?.push(scoresStore.current);
+    return arr;
+})
+
+function endGame() {
     gameState.endingDialogVisible = true;
 }
 
-function gameOver(){
-    if (gameState.user && gameState.user?.length > 0 && gameState.user?.length <=3) {
-        AddScore(score.Score.createFrom({username: gameState.user, score: gameState.streak, difficulty: gameState.level}))
-        router.push('/');
-    }else if (gameState.user && gameState.user?.length > 3){
-        gameState.err = "username should contains max 3 characters"
-    }else {
-        gameState.err = "username is required"
+function handleSucceed() {
+    scoresStore.increaseCurrent();
+    if (checkDifficulty(DifficultyLevel.Hard) && scoresStore.current.score %5 === 0 && gameState.maxSec > 4) {
+        gameState.maxSec -= 4;
     }
-}
-function generatePrompt() {
-    game_prompt.x = generateRandom();
-    game_prompt.y = generateRandom();
+    gameStore.generatePrompt();
+    timer.value?.reset();
 }
 
-
-function check(val: number | undefined, timeout: boolean)  {
-    if (val == game_prompt.result) {
-        gameState.streak ++;
-        current.score ++;
-        if (gameState.level == DifficultyLevel.Hard && timer.value && gameState.streak %5 == 0 && gameState.maxSec > 4) {
-            gameState.maxSec -= 4;
-            generatePrompt()
-            //timer.value?.resetWithoutSec(4)
-            return
-        }
-    }else {
-        switch(gameState.level) {
-        case DifficultyLevel.Easy:
-            if (!timeout) {
-                return;
-            }
-            break;
-        case DifficultyLevel.Medium:
-            gameState.currentlife --;
-            if (gameState.currentlife == 0) {
-                openEndingDialog()
-            }
-            if (!timeout) {
-                return;
-            }
-            break;
-        case DifficultyLevel.Hard:
-            openEndingDialog();
-            return;
-        }
-    }
-
-    if (timeout) {
-        openEndingDialog();
+function handleFailed() {
+    if (checkDifficulty(DifficultyLevel.Hard)) {
+        endGame();
         return;
     }
-    generatePrompt();
-    timer.value?.reset();
+    if (checkDifficulty(DifficultyLevel.Medium)) {
+        gameState.currentLife --;
+        if (gameState.currentLife === 0) {
+            endGame();
+        }
+    }
+}
+
+onBeforeMount(() => {
+    scoresStore.getScoreByGameAndLevel(gameInfosStore.selectedGame, gameInfosStore.difficultyLevel).then();
+})
+
+function quitGame(username: string) {
+    scoresStore.setCurrentScoreUsername(username)
+    scoresStore.saveScore();
+    router.push('/');
 }
 </script>
 <template>
-    <div>
-        <div class="flex flex-column align-items-center">
-            <Timer :seconds="gameState.maxSec" @timeout="check(gameState.answer, true)" ref="timer"/>
-            <div class="flex flex-row align-items-center w-full justify-content-evenly">
-                <span id="streak">Current streak : {{ gameState.streak }}</span>
-                <div v-if="gameState.level == DifficultyLevel.Medium">
-                    <i class="pi pi-heart-fill text-red-700 text-2xl" v-for="n in gameState.currentlife"></i>
-                    <i class="pi pi-heart text-red-700 text-2xl" v-for="n in (3- gameState.currentlife)"></i>
-                </div>
-            </div>
-
-            <div class="flex flex-row align-items-center">
-                <ScoreBoard class="align-self-start" :current="current" :mode="Mode.Live" :level="gameState.level"/>
-                <div id="game">
-                    <Prompter id="prompt" :prompt="game_prompt.prompt" />
-                    <FloatLabel id="input" >
-                        <InputNumber :model-value="gameState.answer" :input-props="{'autofocus': true}"  id="answer-input"   @keyup.enter="check($event.target.value, false); $event.target.value = null;" />
-                        <label for="answer-input">Answer</label>
-                    </FloatLabel>
-                </div>
-            </div>
+    <div class="flex flex-column align-items-center m-2">
+        <Timer :seconds="gameState.maxSec" @timeout="endGame" ref="timer"/>
+        <div class="flex flex-row justify-content-around w-full align-items-center m-3">
+            <Streak class="text-3xl" />
+            <LifeBar v-if="checkDifficulty(DifficultyLevel.Medium)" :max-health="gameState.maxLife" :current="gameState.currentLife" />
         </div>
-
-        <Dialog v-model:visible="gameState.endingDialogVisible"  :content-style="{padding: '0 1em', height: '100%'}"  modal header="Game Over" :closable="false" v-on:hide="gameOver">
-            <div class="flex flex-column w-full">
-                <span class="p-text-secondary block ">The answer to {{ game_prompt.prompt }} was : {{ game_prompt.result }}</span>
-                <div class="flex flex-column m-2 flex-wrap">
-                    <span class="m-2">Register your score !</span>
-                    <FloatLabel class="m-2">
-                        <InputText id="username" v-model="gameState.user" mask="aaa" placeholder="aaa" aria-describedby="username-help"/>
-                        <label for="username">Username</label>
-                    </FloatLabel>
-                    <small id="username-help">Can't contain more than 3 characters.</small>
-                    <InlineMessage class="m-1" v-if="gameState.err" severity="error">{{ gameState.err }}</InlineMessage>
-                </div>
-            </div>
-            <template #footer>
-                <div class="flex flex-row justify-content-center w-full" >
-                    <Button label="Submit" class="m-2" severity="success" @click="gameOver"/>
-                </div>
-            </template>
-        </Dialog>
+        <div class="flex flex-row align-content-center justify-content-evenly w-full m-3">
+            <ScoreBoard size="small" :scores="scores" :mode="Mode.Live" />
+            <GameBoard :prompt="gameStore.prompt" :expected="gameStore.result" @succeed="handleSucceed" @failed="handleFailed" />
+        </div>
+        <GameOverDialog :visible="gameState.endingDialogVisible" :prompt="gameStore.prompt" :answer="gameStore.result" @user-created="quitGame" /> 
     </div>
 </template>
-<style>
-    #game{
-        margin: 2em;
-        display: flex;
-        flex-direction: row;
-        align-items:center ;
-        justify-content: space-evenly;
-    }
-    #prompt{
-        font-size: 5em;
-    }
-    #streak{
-        font-size: 3em;
-    }
-
-    .p-dialog-header, .p-dialog-footer{
-        padding: 1em;
-    }
-</style>
 
