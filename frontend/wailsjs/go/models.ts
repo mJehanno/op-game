@@ -5,6 +5,7 @@ export namespace score {
 	    username: string;
 	    score: number;
 	    difficulty: string;
+	    game: string;
 	    // Go type: time
 	    created_at?: any;
 	
@@ -18,6 +19,7 @@ export namespace score {
 	        this.username = source["username"];
 	        this.score = source["score"];
 	        this.difficulty = source["difficulty"];
+	        this.game = source["game"];
 	        this.created_at = this.convertValues(source["created_at"], null);
 	    }
 	

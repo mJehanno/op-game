@@ -1,4 +1,4 @@
 export enum Mode{
-    Live,
-    Static
+    Live = "livemode",
+    Static = "staticmode"
 } 

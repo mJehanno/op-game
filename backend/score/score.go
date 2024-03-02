@@ -58,11 +58,12 @@ func (s ScoreDB) Convert(dest *Score) {
 }
 
 type Score struct {
-	ID         int64           `db:"id" json:"id,omitempty"`
-	Username   string          `db:"username" json:"username"`
-	Score      int             `db:"score" json:"score"`
-	Difficulty DifficultyLevel `db:"difficulty" json:"difficulty"`
-	Date       time.Time       `db:"created_at" goqu:"skipinsert" json:"created_at,omitempty"`
+	ID         int64           `json:"id,omitempty"`
+	Username   string          `json:"username"`
+	Score      int             `json:"score"`
+	Difficulty DifficultyLevel `json:"difficulty"`
+	Game       GameEnum        `json:"game"`
+	Date       time.Time       `json:"created_at,omitempty"`
 }
 
 type ScoreParams struct {
@@ -78,7 +79,7 @@ func NewScoreService(p ScoreParams) *ScoreService {
 	}
 }
 
-func (s *ScoreService) GetScore(difficulty DifficultyLevel) []Score {
+func (s *ScoreService) GetScore(game GameEnum, difficulty DifficultyLevel) []Score {
 	var (
 		resDB []*ScoreDB
 		res   []Score
@@ -90,7 +91,7 @@ func (s *ScoreService) GetScore(difficulty DifficultyLevel) []Score {
 		goqu.C("difficulty"),
 		goqu.C("created_at"),
 	).From("rank").Order(goqu.C("score").Desc(), goqu.C("created_at").Desc()).
-		Where(goqu.C("difficulty").Eq(difficulty)).Limit(10)
+		Where(goqu.And(goqu.C("difficulty").Eq(difficulty), goqu.C("game").Eq(game))).Limit(10)
 
 	err := query.ScanStructsContext(context.Background(), &resDB)
 	if err != nil {

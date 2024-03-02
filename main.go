@@ -25,7 +25,7 @@ const (
 )
 
 var (
-	current = semver.MustParse("1.3.2")
+	current = semver.MustParse("2.0.1")
 )
 
 type Binder struct {
