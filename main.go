@@ -25,7 +25,7 @@ const (
 )
 
 var (
-	current = semver.MustParse("1.3.1")
+	current = semver.MustParse("1.3.2")
 )
 
 type Binder struct {
@@ -96,6 +96,9 @@ func startApp(bind *Binder) {
 			bind.Score,
 			bind.Vm,
 			bind.Updater,
+		},
+		OnShutdown: func(ctx context.Context) {
+			defer bind.Logger.LogFile.Close()
 		},
 	})
 

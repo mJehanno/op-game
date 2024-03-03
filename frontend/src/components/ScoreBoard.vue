@@ -15,9 +15,9 @@ import { DifficultyLevel } from '@/models/game';
 
 const props  = withDefaults(defineProps<{
     mode:  Mode
-    level: DifficultyLevel
+    level?: DifficultyLevel
     current?: score.Score
-}>(), {mode: Mode.Static, level: DifficultyLevel.Medium})
+}>(), {mode: Mode.Static })
 
 const displayedScore = reactive(new Map<string, score.Score[]>([
     ["easy", []],
@@ -25,7 +25,7 @@ const displayedScore = reactive(new Map<string, score.Score[]>([
     ["hard", []]
 ]))
 const toast = useToast();
-const stringLevel = computed(() => props.level.toString())
+const stringLevel = computed(() => props.level?.toString())
 
 
 onMounted(() => {
@@ -43,7 +43,7 @@ onMounted(() => {
         }) 
     }else {
         GetScore(props.level).then((scores:score.Score[]) => {
-            const sc = displayedScore.get(stringLevel.value) as score.Score[]
+            const sc = displayedScore.get(stringLevel?.value) as score.Score[]
             if (!scores) {
                 scores = [];
             }
@@ -56,7 +56,7 @@ onMounted(() => {
                 sc?.push(props.current);
             }
             
-            displayedScore.set(stringLevel.value,sc);
+            displayedScore.set(stringLevel?.value,sc);
         }).catch(err => {
             console.log(err)
             toast.add({severity: 'error', summary: 'failed to load scoreboard data'})

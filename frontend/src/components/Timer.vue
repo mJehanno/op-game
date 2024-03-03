@@ -44,16 +44,6 @@ function reset() {
   timer.restart(time);
 }
 
-/*function resetWithoutSec(sec: number){
-  const time = new Date();
-  time.setSeconds(time.getSeconds() + defaultSec.value - sec);
-  timer.restart(time);
-}*/
-
-/*function getDefaultSec() {
-  return props.seconds
-}*/
-
 onMounted(() => {
   watchEffect(async () => {
     if(timer.isExpired.value) {

@@ -24,11 +24,18 @@ const (
 	Hard   DifficultyLevel = "hard"
 )
 
+type GameEnum string
+
+const (
+	Mult GameEnum = "mult"
+)
+
 type ScoreDB struct {
-	ID         int64           `db:"id" json:"id,omitempty"`
+	ID         *int64          `db:"id" json:"id,omitempty"`
 	Username   string          `db:"username" json:"username"`
 	Score      int             `db:"score" json:"score"`
 	Difficulty DifficultyLevel `db:"difficulty" json:"difficulty"`
+	Game       GameEnum        `db:"game"`
 	Date       string          `db:"created_at" goqu:"skipinsert"`
 }
 
@@ -36,6 +43,8 @@ func (s Score) Convert(dest *ScoreDB) {
 	dest.Username = s.Username
 	dest.Score = s.Score
 	dest.Date = s.Date.String()
+	dest.Difficulty = s.Difficulty
+	dest.Game = Mult
 }
 
 func (s ScoreDB) Convert(dest *Score) {
@@ -99,7 +108,9 @@ func (s *ScoreService) GetScore(difficulty DifficultyLevel) []Score {
 }
 
 func (s ScoreService) AddScore(sc Score) error {
-	query := s.Data.Conn.Insert("rank").Prepared(true).Rows(sc).Executor()
+	var dbVal ScoreDB
+	sc.Convert(&dbVal)
+	query := s.Data.Conn.Insert("rank").Prepared(true).Rows(dbVal).Executor()
 
 	if _, err := query.Exec(); err != nil {
 		s.Logger.ErrLogger.WithError(err).Error("failed to add rank in database")
@@ -107,5 +118,4 @@ func (s ScoreService) AddScore(sc Score) error {
 	} else {
 		return nil
 	}
-
 }

@@ -3,9 +3,8 @@ package db
 import (
 	"database/sql"
 	_ "embed"
-	"fmt"
+	"mult-game/backend/conf"
 	"mult-game/backend/logger"
-	"os"
 	"path"
 
 	"github.com/doug-martin/goqu/v9"
@@ -26,25 +25,15 @@ type Db struct {
 func GetDbConnection(logger *logger.Logger) *Db {
 	var err error
 	dialect := goqu.Dialect("sqlite3")
+	var confFolder *string
 
-	conf, erra := os.UserConfigDir()
-	if erra != nil {
-		conf, err = os.UserHomeDir()
-		if err != nil {
-			logger.ErrLogger.WithError(fmt.Errorf("%w and %w happened", erra, err)).Error("failed to access config or home directory")
-			return nil
-		}
-	}
-
-	confFolder := path.Join(conf, "mult-game")
-	err = os.MkdirAll(confFolder, 0775)
+	confFolder, err = conf.GetConfFolder()
 	if err != nil {
-		logger.ErrLogger.WithError(err).Error("failed to create folder in config or home directory")
-		return nil
+		logger.ErrLogger.WithError(err).Error("failed to create config folder")
 	}
 
 	if conn == nil {
-		db, err := sql.Open("sqlite", path.Join(confFolder, "score.db"))
+		db, err := sql.Open("sqlite", path.Join(*confFolder, "score.db"))
 		if err != nil {
 			logger.ErrLogger.WithError(err).Error("failed to open db")
 		}

@@ -3,5 +3,6 @@ CREATE TABLE IF NOT EXISTS rank (
     username TEXT NOT NULL,
     score INTEGER NOT NULL,
     difficulty TEXT CHECK(difficulty in ("easy", "medium", "hard")) NOT NULL,
+    game TEXT NOT NULL,
     created_at TEXT DEFAULT (DATETIME('now'))
 )
