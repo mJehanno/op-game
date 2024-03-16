@@ -1,0 +1,14 @@
+version: '3'
+
+tasks:
+  bumpTo:
+    sources:
+      - wails.json
+      - main.go
+    cmds:
+      - for: sources
+        cmd: sed -i -r 's/([0-9]*\.){2}[0-9]*/{{ .CLI_ARGS }}/g' {{ .ITEM }}
+      - ./bump-to.sh {{ .CLI_ARGS }}
+      - git add .
+      - git commit --amend --no-edit
+      - git tag v{{ .CLI_ARGS }}
