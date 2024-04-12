@@ -12,9 +12,14 @@ export const useScoresStore = defineStore("scores", () => {
     const gameInfos = useGameInfosStore();
     const s = new score.Score()
     const current = reactive({id: -1,username: 'xxx', score: 0, difficulty: gameInfos.difficultyLevel, game: gameInfos.selectedGame, created_at: new Date()} as score.Score);
+    // current need to be set to original value at the end of the game
     const scores = reactive(new Map<GameMode, Map<DifficultyLevel,score.Score[]>>());
     const sortedScore = computed(() => sortMap(scores))
 
+    function resetCurrent() {
+        current.score = 0;
+        current.username= 'xxx';
+    }
 
     function increaseCurrent() {
         current.score ++;
@@ -27,6 +32,7 @@ export const useScoresStore = defineStore("scores", () => {
     async function saveScore() {
         try {
             await scoreManager.addScore(current);
+            resetCurrent()
         } catch (error) {
             return error;
         }

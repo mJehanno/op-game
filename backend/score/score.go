@@ -44,7 +44,7 @@ func (s Score) Convert(dest *ScoreDB) {
 	dest.Score = s.Score
 	dest.Date = s.Date.String()
 	dest.Difficulty = s.Difficulty
-	dest.Game = Mult
+	dest.Game = s.Game
 }
 
 func (s ScoreDB) Convert(dest *Score) {
@@ -111,6 +111,10 @@ func (s *ScoreService) GetScore(game GameEnum, difficulty DifficultyLevel) []Sco
 func (s ScoreService) AddScore(sc Score) error {
 	var dbVal ScoreDB
 	sc.Convert(&dbVal)
+	s.Logger.DebugLogger.WithFields(logrus.Fields{
+		"from_front": sc,
+		"to_db":      dbVal,
+	}).Info("trying to insert a new score")
 	query := s.Data.Conn.Insert("rank").Prepared(true).Rows(dbVal).Executor()
 
 	if _, err := query.Exec(); err != nil {

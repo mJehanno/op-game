@@ -1,5 +1,4 @@
 <script setup lang="ts">
-console.log("meh");
 import Button from 'primevue/button';
 import Toast from 'primevue/toast';
 import { onBeforeMount } from 'vue';
@@ -19,7 +18,6 @@ const gameInfos = useGameInfosStore()
 const scoreStore = useScoresStore();
 
 onBeforeMount(() => {
-    console.log("toto")
     scoreStore.getAllScoresByGame(gameInfos.selectedGame).then(() => {
     }).catch(err => {
         toast.add({severity: 'error', summary: 'failed to load scoreboard data'})
