@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DifficultyLevel, type GameState } from '@/models/game';
-import { computed, onBeforeMount, reactive, ref } from 'vue';
+import { computed, onBeforeMount, onMounted, reactive, ref } from 'vue';
 import Timer from '@/components/game-components/Timer.vue';
 import Streak from '@/components/game-components/Streak.vue';
 import LifeBar from '@/components/game-components/LifeBar.vue';
@@ -45,7 +45,8 @@ function handleSucceed() {
     if (checkDifficulty(DifficultyLevel.Hard) && scoresStore.current.score %5 === 0 && gameState.maxSec > 4) {
         gameState.maxSec -= 4;
     }
-    gameStore.generatePrompt();
+    //gameStore.generatePrompt();
+    gameStore.generate()
     timer.value?.reset();
 }
 
@@ -66,6 +67,10 @@ onBeforeMount(() => {
     scoresStore.getScoreByGameAndLevel(gameInfosStore.selectedGame, gameInfosStore.difficultyLevel).then();
 })
 
+onMounted(() => {
+    gameStore.generate();
+})
+
 function quitGame(username: string) {
     scoresStore.setCurrentScoreUsername(username)
     scoresStore.saveScore();
@@ -81,9 +86,9 @@ function quitGame(username: string) {
         </div>
         <div class="flex flex-row align-content-center justify-content-evenly w-full m-3">
             <ScoreBoard size="small" :scores="scores" :mode="Mode.Live" />
-            <GameBoard :prompt="gameStore.prompt" :expected="gameStore.result" @succeed="handleSucceed" @failed="handleFailed" />
+            <GameBoard :prompt="gameStore.game.prompt" :expected="gameStore.game.result" @succeed="handleSucceed" @failed="handleFailed" />
         </div>
-        <GameOverDialog :visible="gameState.endingDialogVisible" :prompt="gameStore.prompt" :answer="gameStore.result" @user-created="quitGame" /> 
+        <GameOverDialog :visible="gameState.endingDialogVisible" :prompt="gameStore.game.prompt" :answer="gameStore.game.result" @user-created="quitGame" /> 
     </div>
 </template>
 
