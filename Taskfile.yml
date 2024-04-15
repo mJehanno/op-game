@@ -12,3 +12,7 @@ tasks:
       - git add .
       - git commit --amend --no-edit
       - git tag v{{ .CLI_ARGS }}
+  build:front:
+    cmds:
+      - npm ci && npm run build
+    dir: frontend/

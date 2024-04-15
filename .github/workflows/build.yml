@@ -21,7 +21,7 @@ jobs:
           - name: 'mult-game_linux-amd64'
             platform:  'linux/amd64'
             os: 'ubuntu-latest'
-          - name: 'mult-game_windows-amd64'
+          - name: 'mult-game_windows-amd64.exe'
             platform:  'windows/amd64'
             os: 'windows-latest'
 

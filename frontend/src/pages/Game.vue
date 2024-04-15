@@ -11,9 +11,5 @@ const router = useRouter();
 
 </script>
 <template>
-    <Game v-if="store.selectedGame !== GameMode.Min" />
-    <div v-else>
-        <Message severity="error" >This game is not implemented yet.</Message> 
-        <Button label="back" @click="router.push('/')"/>
-    </div>
+    <Game />
 </template>
