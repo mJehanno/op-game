@@ -3,8 +3,8 @@ import { useGameInfosStore } from "./game-infos";
 import { computed, reactive, ref } from "vue";
 import { GameMode } from "@/models/game";
 
-function generateRandom(max: number): number{
-    return Math.ceil(Math.random() * max);
+function generateRandom(min: number, max: number): number{
+    return Math.ceil(Math.random() * (max-min) +min);
 }
 
 
@@ -13,20 +13,30 @@ export const useGameStore = defineStore('game', () => {
     const game = reactive({x: 0, y: 0, prompt: "",  result: 0})
     
     function generate() {
+        game.y = generateRandom(0,10);
+        game.x = generateRandom(0,10);
         switch(gameInfosStore.selectedGame) {
             case GameMode.Divid:
-                game.y = generateRandom(10);
-                game.x = generateRandom(10) * game.y;
+                game.x *= game.y;
                 game.prompt = game.x + " / " + game.y;
                 game.result = game.x / game.y;
                 break;
+            case GameMode.Add:
+                const coin = generateRandom(0,1); 
+                if (coin === 1) {
+                    game.x = generateRandom(5,10);
+                }else {
+                    game.y = generateRandom(5,10);
+                }
+                game.prompt = game.x + " + " + game.y;
+                game.result = game.x + game.y;
+                break;
             case GameMode.Mult:
-                game.x = generateRandom(10);
-                game.y = generateRandom(10);
+            default:
                 game.prompt = game.x + " X " + game.y;
                 game.result = game.x * game.y;
-            default:
         }
+        game.prompt += " = ";
     }
     
 

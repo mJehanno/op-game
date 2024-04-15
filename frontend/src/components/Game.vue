@@ -45,8 +45,7 @@ function handleSucceed() {
     if (checkDifficulty(DifficultyLevel.Hard) && scoresStore.current.score %5 === 0 && gameState.maxSec > 4) {
         gameState.maxSec -= 4;
     }
-    //gameStore.generatePrompt();
-    gameStore.generate()
+    gameStore.generate();
     timer.value?.reset();
 }
 
