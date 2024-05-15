@@ -7,7 +7,7 @@ require (
 	github.com/doug-martin/goqu/v9 v9.19.0
 	github.com/google/go-github/v59 v59.0.1-0.20240217151021-73422173c633 // indirect
 	github.com/sirupsen/logrus v1.9.3
-	github.com/wailsapp/wails/v2 v2.7.1
+	github.com/wailsapp/wails/v2 v2.8.1
 	go.uber.org/fx v1.20.1
 	modernc.org/sqlite v1.29.1
 )

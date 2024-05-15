@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { useGameInfosStore } from "./game-infos";
-import { computed, reactive, ref } from "vue";
+import { reactive } from "vue";
 import { GameMode } from "@/models/game";
 
 function generateRandom(min: number, max: number): number{
@@ -30,6 +30,12 @@ export const useGameStore = defineStore('game', () => {
                 }
                 game.prompt = game.x + " + " + game.y;
                 game.result = game.x + game.y;
+                break;
+            case GameMode.Min:
+                game.x = generateRandom(5, 15);
+                game.x = generateRandom(game.y, 20);
+                game.prompt = game.x + " - " + game.y;
+                game.result = game.x - game.y;
                 break;
             case GameMode.Mult:
             default:
