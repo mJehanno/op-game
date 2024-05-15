@@ -9,9 +9,8 @@ import { forIn } from "lodash";
 
 export const useScoresStore = defineStore("scores", () => {
     const scoreManager = inject("score") as ScoreManager;
-    const gameInfos = useGameInfosStore();
     const s = new score.Score()
-    const current = reactive({id: -1,username: 'xxx', score: 0, difficulty: gameInfos.difficultyLevel, game: gameInfos.selectedGame, created_at: new Date()} as score.Score);
+    const current = reactive({id: -1,username: 'xxx', score: 0, created_at: new Date()} as score.Score);
     // current need to be set to original value at the end of the game
     const scores = reactive(new Map<GameMode, Map<DifficultyLevel,score.Score[]>>());
     const sortedScore = computed(() => sortMap(scores))
@@ -27,6 +26,14 @@ export const useScoresStore = defineStore("scores", () => {
 
     function setCurrentScoreUsername(name:string) {
         current.username = name;
+    }
+
+    function setDifficulty(level: DifficultyLevel) {
+        current.difficulty = level;
+    }
+
+    function setGame(mode: GameMode) {
+        current.game = mode;
     }
 
     async function saveScore() {
@@ -88,6 +95,6 @@ export const useScoresStore = defineStore("scores", () => {
         }) 
     }
 
-    return {current, scores, sortedScore, increaseCurrent, setCurrentScoreUsername, saveScore, getScoreByGameAndLevel, getAllScoresByGame}
+    return {current, scores, sortedScore, increaseCurrent, setCurrentScoreUsername, setGame, setDifficulty, saveScore, getScoreByGameAndLevel, getAllScoresByGame}
 })
 
